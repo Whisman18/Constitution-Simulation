@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Constitution Quest - Interactive Civics Simulation</title>
+<style>
+body{font-family:Arial,sans-serif;margin:0;background:#eef2f5;color:#202a33;line-height:1.5}
+header{background:#17324d;color:#fff;padding:28px}main{max-width:1000px;margin:auto;padding:18px}
+section{background:#fff;border:1px solid #d7dde3;border-radius:14px;padding:22px;margin:16px 0}
+h1,h2,h3{color:#17324d}header h1{color:#fff}
+button,select,input{font-size:16px;padding:10px;border-radius:8px}
+button{border:1px solid #bbb;background:#fff;cursor:pointer;margin:4px}
+button:hover{background:#eaf2f7}.primary{background:#2f6f9f;color:#fff;border:0}
+.card{border:1px solid #ddd;border-radius:10px;padding:14px;margin:9px 0}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}
+.choice{display:block;width:100%;text-align:left}.hidden{display:none}
+.good{background:#eaf7f0!important;border-color:#287d5b}.bad{background:#faeceb!important;border-color:#a94442}
+.feedback{display:none;padding:10px;background:#eef4f8;border-radius:8px}.show{display:block}
+nav{position:sticky;top:0;background:#fff;padding:8px;z-index:2;overflow:auto;white-space:nowrap}
+nav button.active{background:#17324d;color:#fff}.amend{border:1px solid #ddd;padding:12px;border-radius:9px;margin:6px 0}
+.detail{display:none}.detail.show{display:block}.step{display:inline-block;min-width:125px}
+.notice{background:#fff8e7;border-left:5px solid #d9a441;padding:12px}
+small{color:#5b6773}
+</style>
+</head>
+<body>
+<header><h1>🏛️ Constitution Quest</h1>
+<p>An interactive civics simulation on constitutional rights, amendments, Congress, courts, lawmaking, and voting. No login is required.</p>
+<p id="progress">Section 1 of 7</p></header>
+<nav id="nav"></nav>
+<main id="app"></main>
+<script>
+const sections=[
+{title:"1. Constitution & Preamble",html:`
+<h2>Mission 1: Enter the Constitution</h2>
+<p><b>An amendment</b> is a formal change or addition to the Constitution. The first ten amendments are the <b>Bill of Rights</b>, ratified in 1791.</p>
+<div class="grid">
+<div class="card"><b>📜 Preamble</b><p>“We the People” introduces purposes including forming a more perfect Union, establishing Justice, domestic Tranquility, common defense, general Welfare, and the Blessings of Liberty.</p></div>
+<div class="card"><b>🛡️ Bill of Rights</b><p>The first ten amendments protect important freedoms and legal rights.</p></div>
+</div>
+<h3>Click to reveal Preamble meanings</h3>
+${["more perfect Union|Build a stronger, more unified nation.","establish Justice|Create a system of laws and courts intended to provide justice.","domestic Tranquility|Maintain peace and order inside the country.","common defence|Protect the country from external threats.","general Welfare|Promote the well-being of the nation.","Blessings of Liberty|Protect liberty for people now and in the future."].map((x,i)=>{let[a,b]=x.split("|");return `<div class="amend"><button onclick="this.nextElementSibling.classList.toggle('show')">“${a}”</button><div class="detail">${b}</div></div>`}).join("")}
+<h3>Checkpoint</h3><div class="question" data-a="b"><p>Which is an amendment?</p><button class="choice" data-c="a">A classroom rule</button><button class="choice" data-c="b">A formal change or addition to the Constitution</button><button class="choice" data-c="c">A campaign slogan</button><div class="feedback"></div></div>`},
+{title:"2. Bill of Rights",html:`
+<h2>Mission 2: Bill of Rights Lab</h2>
+<p>Click an amendment to reveal a student-friendly explanation.</p>
+${[
+"1st — Religion, speech, press, peaceful assembly, and petition.",
+"2nd — Protects a right to keep and bear arms; the text also refers to a well-regulated militia and security of a free state.",
+"3rd — Soldiers generally cannot be quartered in private homes in peacetime without the owner's consent.",
+"4th — Protects against unreasonable searches and seizures; warrants require probable cause and particular description.",
+"5th — Includes grand-jury protection in federal cases, double jeopardy, self-incrimination, due process, and just compensation for takings.",
+"6th — Speedy/public trial, impartial jury, notice of charges, confronting witnesses, calling witnesses, and assistance of counsel.",
+"7th — Preserves jury trial in certain federal civil suits at common law.",
+"8th — No excessive bail or fines and no cruel and unusual punishments.",
+"9th — Listing some rights does not mean people have no other rights retained by the people.",
+"10th — Powers not delegated to the United States and not prohibited to states are reserved to states or the people."
+].map(x=>{let[a,b]=x.split(" — ");return `<div class="amend"><button onclick="this.nextElementSibling.classList.toggle('show')"><b>${a}</b></button><div class="detail">${b}</div></div>`}).join("")}
+<h3>Amendment Challenge</h3>
+${[
+["A student publishes criticism of a government policy.","1st Amendment"],
+["Police conduct an unreasonable search.","4th Amendment"],
+["A person is prosecuted twice for the same offense.","5th Amendment / double jeopardy"],
+["A criminal defendant is denied assistance of counsel.","6th Amendment"],
+["A punishment involves excessive bail or cruel and unusual punishment.","8th Amendment"],
+["A power is not delegated to the U.S. and is not prohibited to states.","10th Amendment"]
+].map((q,i)=>`<div class="question" data-a="b"><p>${i+1}. ${q[0]}</p><button class="choice" data-c="a">Different concept</button><button class="choice" data-c="b">${q[1]}</button><button class="choice" data-c="c">No constitutional connection</button><div class="feedback"></div></div>`).join("")}`},
+{title:"3. 13th, 14th, 15th & 19th",html:`
+<h2>Mission 3: Later Amendments</h2>
+<div class="grid">
+<div class="card"><b>13th (1865)</b><p>Abolished slavery and involuntary servitude, except as punishment for a crime after due conviction.</p></div>
+<div class="card"><b>14th (1868)</b><p>Defines citizenship for people born or naturalized in the United States and includes Due Process and Equal Protection Clauses.</p></div>
+<div class="card"><b>15th (1870)</b><p>Prohibits denying or abridging citizens' voting rights on account of race, color, or previous condition of servitude.</p></div>
+<div class="card"><b>19th (1920)</b><p>Prohibits denying or abridging citizens' voting rights on account of sex.</p></div>
+</div>
+<div class="notice"><b>Historical thinking:</b> Constitutional text and actual enforcement have not always been identical. Separate the legal rule from how it was implemented.</div>
+<h3>Scenario Lab</h3>
+${[
+["A law attempts to restore slavery as a legal institution.","13th Amendment"],
+["A state denies due process and equal protection.","14th Amendment"],
+["A state denies voting because of race.","15th Amendment"],
+["A state denies voting because of sex.","19th Amendment"]
+].map((q,i)=>`<div class="question" data-a="b"><p>${i+1}. ${q[0]}</p><button class="choice" data-c="a">Different amendment</button><button class="choice" data-c="b">${q[1]}</button><button class="choice" data-c="c">No constitutional connection</button><div class="feedback"></div></div>`).join("")}`},
+{title:"4. Congress & Lawmaking",html:`
+<h2>Mission 4: House + Senate</h2>
+<div class="grid"><div class="card"><b>House of Representatives</b><p>435 voting representatives; two-year terms; representation based on population.</p></div><div class="card"><b>Senate</b><p>100 senators, two from each state; six-year terms, staggered.</p></div></div>
+<h3>Build the Law</h3><p>Click the next step in order.</p><div id="law"></div><p id="lawfb" class="feedback"></p>
+<h3>Decision Point</h3><div class="question" data-a="c"><p>A House bill and Senate bill have different text. What must happen before the President receives it?</p><button class="choice" data-c="a">House version automatically wins</button><button class="choice" data-c="b">President chooses the version</button><button class="choice" data-c="c">House and Senate resolve differences and agree on identical text</button><div class="feedback"></div></div>`},
+{title:"5. Courts & Rights",html:`
+<h2>Mission 5: Courtroom Challenge</h2>
+<div class="grid">
+<div class="card"><b>Habeas corpus</b><p>A constitutional protection involving a writ that can be used to challenge unlawful detention; the Constitution limits when the privilege may be suspended.</p></div>
+<div class="card"><b>Ex post facto law</b><p>The Constitution prohibits certain retroactive criminal punishment.</p></div>
+<div class="card"><b>Double jeopardy</b><p>The Fifth Amendment says a person may not be twice put in jeopardy for the same offense; courts recognize doctrines and exceptions.</p></div>
+<div class="card"><b>Miranda</b><p>Miranda v. Arizona established warnings before custodial interrogation about the right to remain silent and counsel, with specific legal rules.</p></div>
+</div>
+<h3>Miranda Mission</h3><p>Jordan is in custody. Before custodial questioning, police give no Miranda warning. Which amendments are most directly connected?</p>
+<select id="mir"><option>Choose</option><option>1st and 3rd</option><option>5th and 6th</option><option>7th and 8th</option><option>9th and 10th</option></select><button class="primary" onclick="checkMiranda()">Check</button><div id="mirfb" class="feedback"></div>
+<h3>Concept Challenge</h3>
+${[
+["A prisoner asks a court to review whether detention is lawful.","Habeas corpus"],
+["A criminal law is applied retroactively to punish earlier conduct.","Ex post facto law"],
+["A person is prosecuted twice for the same offense after jeopardy attached.","Double jeopardy"]
+].map((q,i)=>`<div class="question" data-a="b"><p>${i+1}. ${q[0]}</p><button class="choice" data-c="a">Different concept</button><button class="choice" data-c="b">${q[1]}</button><button class="choice" data-c="c">No connection</button><div class="feedback"></div></div>`).join("")}`},
+{title:"6. Voting",html:`
+<h2>Mission 6: Voting Eligibility</h2>
+<div class="notice"><b>General federal baseline:</b> U.S. citizens who meet their state's residency and registration rules and are 18 on or before Election Day can generally vote. State rules can add procedures such as registration deadlines and voter-ID requirements. North Dakota does not require voter registration.</div>
+<div class="grid"><div class="card"><b>Citizenship</b><p>Generally required for federal, state, and most local elections. Some local jurisdictions allow non-citizens to vote in certain local elections.</p></div><div class="card"><b>Age</b><p>18 on or before Election Day for federal elections.</p></div><div class="card"><b>Registration</b><p>Every state except North Dakota requires registration to become a voter; deadlines vary.</p></div><div class="card"><b>ID</b><p>Voter-ID requirements vary by state.</p></div></div>
+<h3>Voter Profile Simulator</h3><label>U.S. citizen?</label><select id="cit"><option>Choose</option><option>Yes</option><option>No</option></select><label>Age</label><input id="age" type="number" min="0" max="120"><label>Registered under your state's rules?</label><select id="reg"><option>Choose</option><option>Yes</option><option>No</option></select><button class="primary" onclick="checkVoter()">Evaluate</button><div id="vfb" class="feedback"></div>
+<h3>Voting Amendment Check</h3><div class="question" data-a="d"><p>Which amendment prohibited denying the right to vote on account of sex?</p><button class="choice" data-c="a">13th</button><button class="choice" data-c="b">14th</button><button class="choice" data-c="c">15th</button><button class="choice" data-c="d">19th</button><div class="feedback"></div></div>`},
+{title:"7. Final Challenge",html:`<h2>Exit Challenge</h2><p>Answer all questions and click Grade.</p><div id="final"></div><button class="primary" onclick="grade()">Grade Final Challenge</button><div id="result" class="feedback"></div>`}
+];
+
+const nav=document.getElementById("nav"),app=document.getElementById("app");
+sections.forEach((s,i)=>{let b=document.createElement("button");b.textContent=s.title;b.onclick=()=>load(i);nav.appendChild(b)});
+let current=0;
+function load(i){current=i;app.innerHTML=sections[i].html;document.getElementById("progress").textContent="Section "+(i+1)+" of 7";nav.querySelectorAll("button").forEach((b,j)=>b.classList.toggle("active",j===i));bindQuestions();if(i===3)law();if(i===6)finalQuiz();scrollTo(0,0)}
+function bindQuestions(){document.querySelectorAll(".question").forEach(q=>q.querySelectorAll(".choice").forEach(b=>b.onclick=()=>{if(q.dataset.done)return;q.dataset.done=1;let ok=b.dataset.c===q.dataset.a;q.querySelectorAll(".choice").forEach(x=>x.classList.remove("good","bad"));b.classList.add(ok?"good":"bad");if(!ok)q.querySelector('[data-c="'+q.dataset.a+'"]').classList.add("good");let f=q.querySelector(".feedback");f.textContent=ok?"✅ Correct.":"❌ Not quite. The green choice shows the best answer.";f.classList.add("show")}))}
+function law(){let steps=["Idea / bill drafted","Introduced + committee","House debate & vote","Senate debate & vote","Resolve differences","President acts","Law / veto override"],i=0,box=document.getElementById("law");box.innerHTML="";steps.forEach((s,n)=>{let b=document.createElement("button");b.textContent=(n+1)+". "+s;b.disabled=n!==i;b.className="step";b.onclick=()=>{i++;if(i>=steps.length)i=steps.length-1;law();document.getElementById("lawfb").textContent=i===steps.length-1?"🎉 Major stages complete.":"Good move—choose the next stage.";document.getElementById("lawfb").classList.add("show")};box.appendChild(b)})}
+function checkMiranda(){let f=document.getElementById("mirfb");f.textContent=document.getElementById("mir").value==="5th and 6th"?"✅ Correct. Miranda is connected especially to Fifth Amendment self-incrimination and Sixth Amendment counsel.":"❌ Think self-incrimination and the right to an attorney.";f.classList.add("show")}
+function checkVoter(){let c=document.getElementById("cit").value,a=+document.getElementById("age").value,r=document.getElementById("reg").value,f=document.getElementById("vfb");if(c==="Choose"||r==="Choose"||!Number.isFinite(a)){f.textContent="Choose all fields.";f.classList.add("show");return}f.textContent=c==="No"?"🔴 Generally not eligible for federal elections because U.S. citizenship is required.":a<18?"🔴 Not eligible for federal elections until 18 on or before Election Day.":r==="No"?"🟡 Registration is required in almost every state; check your state rules.":"🟢 Meets the general baseline described here; state-specific rules still matter.";f.classList.add("show")}
+const finals=[["Which amendment protects speech, press, religion, assembly, and petition?","1st Amendment"],["Which amendment addresses unreasonable searches and seizures?","4th Amendment"],["Which amendment includes self-incrimination and double jeopardy?","5th Amendment"],["Which amendment names assistance of counsel in criminal prosecutions?","6th Amendment"],["Which amendment addresses excessive bail and cruel and unusual punishment?","8th Amendment"],["Which amendment abolished slavery?","13th Amendment"],["Which amendment includes Equal Protection and Due Process?","14th Amendment"],["Which amendment addresses voting discrimination based on race, color, or previous condition of servitude?","15th Amendment"],["Which amendment addresses voting discrimination based on sex?","19th Amendment"],["Which chamber has 100 members, two per state?","Senate"],["Before a bill goes to the President, what must House and Senate do?","Pass identical text"],["What concept can challenge unlawful detention?","Habeas corpus"]];
+function finalQuiz(){let box=document.getElementById("final");finals.forEach((x,i)=>box.innerHTML+=`<div class="card"><p><b>${i+1}. ${x[0]}</b></p><select data-final="${x[1]}"><option>Choose</option><option>${x[1]}</option><option>Another amendment</option><option>A presidential power</option><option>A state-only rule</option></select></div>`)}
+function grade(){let qs=[...document.querySelectorAll("[data-final]")],correct=0,done=0;qs.forEach(s=>{if(s.value!=="Choose"){done++;if(s.value===s.dataset.final)correct++}});let r=document.getElementById("result");r.textContent=done<qs.length?"Answer every final question first. You have answered "+done+" of "+qs.length+".":"🏛️ Final score: "+correct+" / "+qs.length+" ("+Math.round(correct/qs.length*100)+"%). "+(correct/qs.length>=.8?"Excellent work!":"Review the amendment cards and try again.");r.classList.add("show")}
+load(0);
+</script>
+</body></html>
